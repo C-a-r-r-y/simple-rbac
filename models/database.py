@@ -1,7 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncEngine
 from .user import Base, User, UserRole
 from sqlalchemy import select
-from .auth import get_password_hash
+from config import SYSTEM_ADMIN_CONFIG
+from service.auth import get_password_hash
 
 async def init_db(engine: AsyncEngine):
     """Initialize database"""
@@ -16,10 +17,10 @@ async def init_db(engine: AsyncEngine):
         if not result.scalars().first():
             # Create default system admin
             admin = User(
-                username="admin",
-                password=get_password_hash("password"),
+                username=SYSTEM_ADMIN_CONFIG['username'],
+                password=get_password_hash(SYSTEM_ADMIN_CONFIG['password']),
                 role=UserRole.SYSTEM_ADMIN,
-                description="default system admin"
+                description=SYSTEM_ADMIN_CONFIG['description']
             )
             conn.add(admin)
             await conn.commit()
