@@ -1,8 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncEngine
-from .user import Base, User, UserRole
+from ..models.user import Base, User, UserRole
 from sqlalchemy import select
 from config import SYSTEM_ADMIN_CONFIG
-from service.auth import get_password_hash
+from services.auth import get_password_hash
 
 async def init_db(engine: AsyncEngine):
     """Initialize database"""
