@@ -8,7 +8,7 @@ from schemas.user import UserCreate, UserUpdate, UserResponse
 # 创建一个密码上下文对象，指定使用 bcrypt 加密算法
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-class UserService:
+class UserServices:
     @staticmethod
     async def create_user(session: AsyncSession, user_data: UserCreate) -> UserResponse:
         """创建用户"""
@@ -47,7 +47,7 @@ class UserService:
             .values(**user_data.dict(exclude_unset=True))
         )
         await session.commit()
-        return await UserService.get_user(session, user_id)
+        return await UserServices.get_user(session, user_id)
 
     @staticmethod
     async def delete_user(session: AsyncSession, user_id: int) -> bool:
@@ -68,6 +68,6 @@ class UserService:
         user = result.scalars().first()
         if not user:
             return None
-        if not UserService.verify_password(password, user.password):
+        if not UserServices.verify_password(password, user.password):
             return None
         return UserResponse.from_orm(user)
