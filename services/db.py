@@ -4,7 +4,7 @@ from ..models.user import Base, User, UserRole
 from sqlalchemy import select
 from contextlib import asynccontextmanager
 from config import SYSTEM_ADMIN_CONFIG, DATABASE_CONFIG
-from services.user_services import get_password_hash
+from user_services import get_password_hash
 from typing import AsyncGenerator
 
 # 全局数据库引擎实例
