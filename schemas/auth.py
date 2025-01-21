@@ -1,18 +1,17 @@
 from pydantic import BaseModel
-from datetime import datetime
 
 class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str
-    access_token_exp: datetime
-    refresh_token_exp: datetime
+    access_token_exp: int
+    refresh_token_exp: int
 
 class TokenPayload(BaseModel):
     id: int
     username: str
     role: str
-    exp: datetime
+    exp: int
 
 class LoginRequest(BaseModel):
     username: str

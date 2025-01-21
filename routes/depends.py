@@ -1,13 +1,13 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from typing import Optional
-from schemas.auth import TokenData
+from schemas.auth import TokenPayload
 from schemas.user import UserRole
 from services.auth_service import verify_token
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
-async def _get_token_data(token: str) -> TokenData:
+async def _get_token_data(token: str) -> TokenPayload:
     """验证并返回TokenData"""
     token_data = verify_token(token)
     if token_data is None:
@@ -18,11 +18,11 @@ async def _get_token_data(token: str) -> TokenData:
         )
     return token_data
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenData:
+async def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenPayload:
     """获取当前用户"""
     return await _get_token_data(token)
 
-async def get_current_admin(token: str = Depends(oauth2_scheme)) -> TokenData:
+async def get_current_admin(token: str = Depends(oauth2_scheme)) -> TokenPayload:
     """获取当前管理员用户"""
     token_data = await _get_token_data(token)
     if token_data.role not in [UserRole.SYSTEM_ADMIN, UserRole.ADMIN]:
