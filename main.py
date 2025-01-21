@@ -1,9 +1,8 @@
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from config import DATABASE_CONFIG, JWT_CONFIG, LOGGING_CONFIG, SYSTEM_ADMIN_CONFIG
-from sqlalchemy.ext.asyncio import create_async_engine
-from services.init_db import init_db
+from config import JWT_CONFIG, LOGGING_CONFIG, SYSTEM_ADMIN_CONFIG
+from services.db import create_db_engine, init_db, close_db_connection
 from routes.auth import auth_router
 from routes.users import users_router
 
@@ -22,19 +21,19 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# 创建数据库引擎
-engine = create_async_engine(
-    f"mysql+asyncmy://{DATABASE_CONFIG['user']}:{DATABASE_CONFIG['password']}@"
-    f"{DATABASE_CONFIG['host']}:{DATABASE_CONFIG['port']}/{DATABASE_CONFIG['database']}",
-    echo=True
-)
-
-# 初始化数据库
+# 数据库初始化
 @app.on_event("startup")
 async def startup_event():
     logger.info("Initializing database...")
+    engine = create_db_engine()
     await init_db(engine)
     logger.info("Database initialized successfully")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    logger.info("Closing database connections...")
+    await close_db_connection()
+    logger.info("Database connections closed")
 
 # 注册路由
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
