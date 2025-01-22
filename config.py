@@ -15,8 +15,8 @@ DATABASE_CONFIG = {
 JWT_CONFIG = {
     'secret_key': os.getenv('JWT_SECRET_KEY', 'your-secret-key'),
     'algorithm': 'HS256',
-    'access_token_expire': timedelta(minutes=int(os.getenv('JWT_ACCESS_EXPIRE_MINUTES', '30'))),
-    'refresh_token_expire': timedelta(days=int(os.getenv('JWT_REFRESH_EXPIRE_DAYS', '7')))
+    'access_token_expire': timedelta(minutes=int(os.getenv('JWT_ACCESS_EXPIRE_MINUTES', '10'))),
+    'refresh_token_expire': timedelta(days=int(os.getenv('JWT_REFRESH_EXPIRE_DAYS', '3')))
 }
 
 # 日志配置
