@@ -30,7 +30,7 @@ async def get_user(session: AsyncSession, user_id: int) -> Optional[UserResponse
     return UserResponse.from_orm(user) if user else None
 
 
-async def get_users(session: AsyncSession, skip: int = 0, limit: int = 100) -> List[UserResponse]:
+async def get_users_list(session: AsyncSession, skip: int = 0, limit: int = 100) -> List[UserResponse]:
     """获取用户列表"""
     result = await session.execute(select(User).offset(skip).limit(limit))
     users = result.scalars().all()

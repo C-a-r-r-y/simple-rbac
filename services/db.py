@@ -24,9 +24,18 @@ def get_db_engine() -> AsyncEngine:
         raise RuntimeError("Database engine not initialized")
     return _engine
 
-@asynccontextmanager
-async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
+async def get_db_session() -> AsyncSession:
     """获取数据库会话"""
+    async with AsyncSession(get_db_engine()) as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+
+async def get_db_session_dep() -> AsyncSession:
+    """FastAPI依赖注入使用的数据库会话获取函数"""
     async with AsyncSession(get_db_engine()) as session:
         try:
             yield session

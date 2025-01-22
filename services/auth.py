@@ -14,9 +14,9 @@ def get_current_time() -> int:
     """获取当前UTC时间戳"""
     return int(time.time())
 
-def create_token(user_id: int, username: str, role: str, expire_delta: int) -> str:
+def create_token(user_id: int, username: str, role: str, expire_delta) -> str:
     """创建JWT token"""
-    expire = get_current_time() + expire_delta
+    expire = get_current_time() + int(expire_delta.total_seconds())
     to_encode = {
         "id": user_id,
         "username": username,

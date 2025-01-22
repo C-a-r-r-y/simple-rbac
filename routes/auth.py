@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.auth import TokenResponse, LoginRequest, RefreshTokenRequest
 from services.auth import create_tokens_response, verify_token, refresh_tokens
 from services.user import authenticate_user
-from services.db import get_db_session
+from services.db import get_db_session_dep
 
 router = APIRouter(tags=["auth"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -12,7 +12,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 @router.post("/login", response_model=TokenResponse)
 async def login(
     login_data: LoginRequest,
-    session: AsyncSession = Depends(get_db_session)
+    session: AsyncSession = Depends(get_db_session_dep)
 ):
     user = await authenticate_user(session, login_data.username, login_data.password)
     if not user:
