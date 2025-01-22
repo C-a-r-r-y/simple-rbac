@@ -7,7 +7,6 @@ from schemas.user import UserCreate, UserUpdate, UserResponse
 
 # 创建一个密码上下文对象，指定使用 bcrypt 加密算法
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
     
 async def create_user(session: AsyncSession, user_data: UserCreate) -> UserResponse:
     """创建用户"""
@@ -60,6 +59,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     """验证输入的明文密码是否与存储的哈希密码匹配"""
     return pwd_context.verify(plain_password, hashed_password)
 
+def get_password_hash(password: str) -> str:
+    """生成使用 bcrypt 的密码哈希"""
+    return pwd_context.hash(password)
 
 async def authenticate_user(session: AsyncSession, username: str, password: str) -> Optional[UserResponse]:
     """验证用户登录"""

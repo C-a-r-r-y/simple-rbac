@@ -3,7 +3,7 @@ from typing import List, Optional
 from schemas.auth import TokenPayload
 from schemas.user import UserCreate, UserUpdate, UserResponse, UserRole
 from routes.depends import get_current_user,get_current_admin
-from services.user_services import get_user_by_id,get_users,create_user,update_user,delete_user
+from services.user import get_users,create_user,update_user,delete_user#,get_user_by_id
 from services.db import get_db_session
 
 router = APIRouter(tags=["users"])
@@ -15,12 +15,12 @@ async def get_users(
     role: Optional[str] = None,
     current_user_token: TokenPayload = Depends(get_current_user)
 ):
-    current_user = await get_user_by_id(current_user_token.id)
-    if current_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
+    # current_user = await get_user_by_id(current_user_token.id)
+    # if current_user is None:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_404_NOT_FOUND,
+    #         detail="User not found"
+    #     )
     async with get_db_session() as session:
         skip = (page - 1) * limit
         users = await get_users(session, skip=skip, limit=limit)

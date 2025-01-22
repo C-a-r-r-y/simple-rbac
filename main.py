@@ -1,10 +1,13 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import JWT_CONFIG, LOGGING_CONFIG, SYSTEM_ADMIN_CONFIG
 from services.db import create_db_engine, init_db, close_db_connection
-from routes.auth import auth_router
-from routes.users import users_router
+from routes.auth import router as auth_router
+from routes.users import router as users_router
 
 # 配置日志
 logging.basicConfig(

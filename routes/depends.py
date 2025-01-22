@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from typing import Optional
 from schemas.auth import TokenPayload
 from schemas.user import UserRole
-from services.auth_service import verify_token
+from services.auth import verify_token
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
