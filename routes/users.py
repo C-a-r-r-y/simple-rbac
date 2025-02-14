@@ -41,6 +41,20 @@ async def update_user(
 ):
     return await user_service.update_user(session, user_id, user_data)
 
+@router.get("/{user_id}", response_model=UserResponse)
+async def get_user(
+    user_id: int,
+    current_user_token: TokenPayload = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session_dep)
+):
+    user = await user_service.get_user(session, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    return user
+
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
     user_id: int,
