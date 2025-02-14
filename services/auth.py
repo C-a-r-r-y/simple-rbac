@@ -14,29 +14,24 @@ def get_current_time() -> int:
     """获取当前UTC时间戳"""
     return int(time.time())
 
-def create_token(user_id: int, username: str, role: str, expire_delta) -> str:
+def create_token(user_id: int, username: str, role: str, token_type: str = "access") -> str:
     """创建JWT token"""
+    expire_delta = ACCESS_TOKEN_EXPIRE if token_type == "access" else REFRESH_TOKEN_EXPIRE
     expire = get_current_time() + int(expire_delta.total_seconds())
+    
     to_encode = {
         "id": user_id,
         "username": username,
         "role": role,
-        "exp": expire
+        "exp": expire,
+        "token_type": token_type
     }
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-def create_access_token(user_id: int, username: str, role: str) -> str:
-    """创建access token"""
-    return create_token(user_id, username, role, ACCESS_TOKEN_EXPIRE)
-
-def create_refresh_token(user_id: int, username: str, role: str) -> str:
-    """创建refresh token"""
-    return create_token(user_id, username, role, REFRESH_TOKEN_EXPIRE)
-
 def create_tokens_response(user_id: int, username: str, role: str) -> TokenResponse:
     """创建access token和refresh token"""
-    access_token = create_access_token(user_id, username, role)
-    refresh_token = create_refresh_token(user_id, username, role)
+    access_token = create_token(user_id, username, role, "access")
+    refresh_token = create_token(user_id, username, role, "refresh")
     
     # 获取token的过期时间
     access_token_exp = get_current_time() + int(ACCESS_TOKEN_EXPIRE.total_seconds())
@@ -58,7 +53,8 @@ def verify_token(token: str) -> Optional[TokenPayload]:
             id=payload.get("id"),
             username=payload.get("username"),
             role=payload.get("role"),
-            exp=payload.get("exp")
+            exp=payload.get("exp"),
+            token_type=payload.get("token_type")
         )
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         return None

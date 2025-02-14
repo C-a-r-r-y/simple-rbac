@@ -12,6 +12,7 @@ class TokenPayload(BaseModel):
     username: str
     role: str
     exp: int
+    token_type: str
 
 class LoginRequest(BaseModel):
     username: str
