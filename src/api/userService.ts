@@ -23,5 +23,10 @@ export const userService = {
 
   async deleteUser(userId: number): Promise<void> {
     await apiClient.delete(`${API_BASE_URL}/${userId}`);
+  },
+
+  async getUser(userId: number): Promise<UserResponse> {
+    const response = await apiClient.get(`${API_BASE_URL}/${userId}`);
+    return response.data;
   }
 };
