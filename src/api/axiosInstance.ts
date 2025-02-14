@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { authService } from './authService';
+import { useAuthStore } from '../store/userStore';
 
 // 创建axios实例
 const apiClient = axios.create({
@@ -12,8 +12,8 @@ const apiClient = axios.create({
 // 请求拦截器
 apiClient.interceptors.request.use(
   async (config) => {
-    // 从localStorage获取access_token
-    const accessToken = localStorage.getItem('access_token');
+    const store = useAuthStore();
+    const accessToken = store.accessToken;
     
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
@@ -37,21 +37,11 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
       
       try {
-        // 获取refresh_token
-        const refreshToken = localStorage.getItem('refresh_token');
-        if (!refreshToken) {
-          throw new Error('No refresh token available');
-        }
-        
-        // 刷新token
-        const { access_token, refresh_token } = await authService.refreshToken(refreshToken);
-        
-        // 保存新token
-        localStorage.setItem('access_token', access_token);
-        localStorage.setItem('refresh_token', refresh_token);
+        const store = useAuthStore();
+        await store.refreshTokenMethod();
         
         // 重试原始请求
-        originalRequest.headers.Authorization = `Bearer ${access_token}`;
+        originalRequest.headers.Authorization = `Bearer ${store.accessToken}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
         // 刷新token失败，跳转到登录页
