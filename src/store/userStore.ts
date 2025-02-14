@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { authService } from '../api/authService';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 import { createPinia } from 'pinia';
+import { jwtDecode } from 'jwt-decode';
 
 // 创建 Pinia 实例并使用持久化插件
 const pinia = createPinia();
@@ -35,11 +36,12 @@ export const useAuthStore = defineStore('auth', () => {
   // 用户登录方法，调用 authService.login 获取令牌并设置状态
   async function login(usernameParam: string, password: string) {
     try {
-      const { access_token, refresh_token, role: userRole, username: userUsername, id: userIdValue } = await authService.login(usernameParam, password);
+      const { access_token, refresh_token } = await authService.login(usernameParam, password);
+      const decoded = jwtDecode<{ sub: string; role: string; username: string }>(access_token);
       setTokens({ access_token, refresh_token });
-      setRole(userRole);
-      username.value = userUsername;
-      userId.value = userIdValue;
+      setRole(decoded.role);
+      username.value = decoded.username;
+      userId.value = parseInt(decoded.sub);
     } catch (error) {
       console.error('Login failed:', error);
     }
