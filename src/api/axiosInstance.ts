@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { useAuthStore } from '../store/userStore';
+import { userStore } from '../store/userStore';
+import router from '../router';
 
 // 创建axios实例
 const apiClient = axios.create({
@@ -12,7 +13,7 @@ const apiClient = axios.create({
 // 请求拦截器
 apiClient.interceptors.request.use(
   async (config) => {
-    const store = useAuthStore();
+    const store = userStore();
     const accessToken = store.accessToken;
     
     if (accessToken) {
@@ -37,15 +38,15 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
       
       try {
-        const store = useAuthStore();
+        const store = userStore();
         await store.refreshTokenMethod();
         
         // 重试原始请求
         originalRequest.headers.Authorization = `Bearer ${store.accessToken}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
-        // 刷新token失败，跳转到登录页
-        window.location.href = '/login';
+        // 刷新token失败，使用router跳转到登录页
+        router.push({ name: 'login' });
         return Promise.reject(refreshError);
       }
     }

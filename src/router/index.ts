@@ -22,12 +22,20 @@ const router = createRouter({
   ]
 })
 
+
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
   
-  if (to.meta.requiresAuth && !userStore.isAuthenticated) {
+  // 如果路由需要认证但用户未登录
+  if (to.meta.requiresAuth && !userStore.isLoggedIn) {
     next({ name: 'login' })
-  } else {
+  }
+  // 如果用户已登录但访问登录页
+  else if (to.name === 'login' && userStore.isLoggedIn) {
+    next({ name: 'manage' })
+  }
+  // 其他情况正常导航
+  else {
     next()
   }
 })
