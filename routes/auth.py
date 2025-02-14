@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.auth import TokenResponse, LoginRequest, RefreshTokenRequest
-from services.auth import create_tokens_response, verify_token, refresh_tokens
+from services.auth import create_tokens_response, refresh_tokens
 from services.user import authenticate_user
 from services.db import get_db_session_dep
 

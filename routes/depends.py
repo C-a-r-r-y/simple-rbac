@@ -3,13 +3,13 @@ from fastapi.security import OAuth2PasswordBearer
 from typing import Optional
 from schemas.auth import TokenPayload
 from schemas.user import UserRole
-from services.auth import verify_token
+from services.auth import verify_access_token
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 async def _get_token_data(token: str) -> TokenPayload:
     """验证并返回TokenData"""
-    token_data = verify_token(token)
+    token_data = verify_access_token(token)
     if token_data is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

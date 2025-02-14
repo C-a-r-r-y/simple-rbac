@@ -45,10 +45,28 @@ def create_tokens_response(user_id: int, username: str, role: str) -> TokenRespo
         refresh_token_exp=refresh_token_exp
     )
 
-def verify_token(token: str) -> Optional[TokenPayload]:
-    """验证token有效性并返回payload，如果token无效则返回None"""
+def verify_access_token(token: str) -> Optional[TokenPayload]:
+    """验证access token有效性并返回payload，如果token无效或类型不匹配则返回None"""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("token_type") != "access":
+            return None
+        return TokenPayload(
+            id=payload.get("id"),
+            username=payload.get("username"),
+            role=payload.get("role"),
+            exp=payload.get("exp"),
+            token_type=payload.get("token_type")
+        )
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        return None
+
+def verify_refresh_token(token: str) -> Optional[TokenPayload]:
+    """验证refresh token有效性并返回payload，如果token无效或类型不匹配则返回None"""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("token_type") != "refresh":
+            return None
         return TokenPayload(
             id=payload.get("id"),
             username=payload.get("username"),
@@ -61,7 +79,7 @@ def verify_token(token: str) -> Optional[TokenPayload]:
 
 def refresh_tokens(refresh_token: str) -> Optional[TokenResponse]:
     """使用refresh token刷新access token，如果refresh token无效则返回None"""
-    token_data = verify_token(refresh_token)
+    token_data = verify_refresh_token(refresh_token)
     if token_data is None:
         return None
     else:
