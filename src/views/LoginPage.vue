@@ -1,5 +1,6 @@
 <template>
   <div class="login-container">
+    <h2 class="login-title">用户登录</h2>
     <el-form :model="form" label-width="80px">
       <el-form-item label="用户名">
         <el-input v-model="form.username" />
@@ -48,5 +49,36 @@ const handleLogin = async () => {
 .login-container {
   max-width: 400px;
   margin: 100px auto;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.login-title {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #303133;
+  font-size: 24px;
+}
+
+.el-form-item {
+  margin-bottom: 24px;
+}
+
+.el-input {
+  width: 100%;
+}
+
+.el-button {
+  width: 100%;
+  margin-top: 16px;
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    margin: 50px 20px;
+    padding: 30px;
+  }
 }
 </style>
