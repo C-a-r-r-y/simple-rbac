@@ -1,16 +1,10 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { authService } from '../api/authService';
-import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
-import { createPinia } from 'pinia';
 import { jwtDecode } from 'jwt-decode';
 
-// 创建 Pinia 实例并使用持久化插件
-const pinia = createPinia();
-pinia.use(piniaPluginPersistedstate);
-
-// 定义 auth store，包含用户认证相关状态和方法
-export const userStore = defineStore('auth', () => {
+// 定义 store，包含用户认证相关状态和方法
+export const userStore = defineStore('user', () => {
   const accessToken = ref('');
   const refreshToken = ref('');
   const role = ref('');
@@ -65,26 +59,4 @@ export const userStore = defineStore('auth', () => {
   }
 
   return { accessToken, refreshTokenToken: refreshToken, role, username, userId, isLoggedIn, login, logout, refreshTokenMethod };
-}, {
-  persist: true,
 });
-
-// 使用插件进行持久化，监听 store 变化并保存到本地存储
-userStore().$subscribe((mutation, state) => {
-  localStorage.setItem('authStore', JSON.stringify(state));
-});
-
-// 监听 action 执行，登录和刷新令牌后保存状态到本地存储
-userStore().$onAction(({ name, store, args, after, onError }) => {
-  if (name === 'login' || name === 'refreshTokenMethod') {
-    after(() => {
-      localStorage.setItem('authStore', JSON.stringify(store.$state));
-    });
-  }
-});
-
-// 初始化时从本地存储恢复状态
-const persistedState = JSON.parse(localStorage.getItem('authStore') || '{}');
-if (persistedState.accessToken && persistedState.refreshTokenToken && persistedState.role && persistedState.username && persistedState.userId !== null) {
-  userStore().$patch(persistedState);
-}
