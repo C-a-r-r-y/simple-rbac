@@ -15,13 +15,10 @@ const router = createRouter({
       component: () => import('@/views/ManagePage.vue'),
       meta: { requiresAuth: true }
     },
-    {
-      path: '/',
-      redirect: '/manage'
-    },
+
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/login'
+      redirect: '/manage'
     }
   ]
 })
