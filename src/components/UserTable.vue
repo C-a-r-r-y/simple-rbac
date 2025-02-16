@@ -67,4 +67,8 @@ const handleDelete = async (user: UserResponse) => {
 onMounted(() => {
   fetchUsers();
 });
+
+defineExpose({
+  fetchUsers
+});
 </script>

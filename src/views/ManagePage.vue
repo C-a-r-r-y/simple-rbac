@@ -51,17 +51,8 @@ import EditUserDialog from '@/components/EditUserDialog.vue'
 const router = useRouter()
 const userStore = store()
 
-const userList = ref<UserResponse[]>([])
 const editUserDialog = ref<InstanceType<typeof EditUserDialog>>()
-
-const fetchUserList = async () => {
-  try {
-    const data = await userService.getUsers()
-    userList.value = data
-  } catch (error) {
-    ElMessage.error('获取用户列表失败')
-  }
-}
+const userTableRef = ref<InstanceType<typeof UserTable>>()
 
 const handleLogout = () => {
   userStore.logout()
@@ -72,13 +63,13 @@ const handleCreateUser = () => {
   editUserDialog.value?.open({
     mode: 'create',
     onConfirm: () => {
-      fetchUserList()
+      userTableRef.value?.fetchUsers()
     }
   })
 }
 
 onMounted(() => {
-  fetchUserList()
+  userTableRef.value?.fetchUsers()
 })
 </script>
 
