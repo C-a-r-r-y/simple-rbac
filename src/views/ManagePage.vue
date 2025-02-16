@@ -1,14 +1,17 @@
 <template>
   <div class="manage-page">
-    <el-card class="page-container">
-      <div class="page-header">
-        <div class="user-info">
-          <h2 class="page-title">用户管理</h2>
-          <div class="user-detail">
-            <span class="username">{{ userStore.username }}</span>
-            <span class="role">({{ userStore.role }})</span>
-          </div>
+    <el-menu
+      mode="horizontal"
+      class="nav-bar"
+    >
+      <el-menu-item index="1" class="nav-title">欢迎</el-menu-item>
+      <el-menu-item index="2" class="user-info">
+        <div class="user-detail">
+          <span class="username">{{ userStore.username }}</span>
+          <span class="role">({{ userStore.role }})</span>
         </div>
+      </el-menu-item>
+      <el-menu-item index="3">
         <el-button
           type="danger"
           class="logout-btn"
@@ -16,7 +19,19 @@
         >
           登出
         </el-button>
-      </div>
+      </el-menu-item>
+    </el-menu>
+    <el-card class="page-container">
+      <el-text class="system-title" type="primary" size="large" tag="h1">
+        用户管理系统
+      </el-text>
+      <el-button
+        type="primary"
+        class="create-btn"
+        @click="handleCreateUser"
+      >
+        创建用户
+      </el-button>
       <UserTable/>
     </el-card>
   </div>
@@ -50,6 +65,10 @@ const handleLogout = () => {
   router.push({ name: 'login' })
 }
 
+const handleCreateUser = () => {
+  // TODO: 实现创建用户逻辑
+}
+
 onMounted(() => {
   fetchUserList()
 })
@@ -58,6 +77,18 @@ onMounted(() => {
 <style scoped>
 .manage-page {
   padding: 20px;
+}
+
+.nav-bar {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-title {
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .user-info {
@@ -81,7 +112,13 @@ onMounted(() => {
 }
 
 .logout-btn {
+  margin: 0;
+}
+
+.system-title {
   margin-bottom: 20px;
-  float: right;
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: 1px;
 }
 </style>
