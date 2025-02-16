@@ -9,8 +9,8 @@
       </el-form-item>
       <el-form-item label="角色">
         <el-select v-model="editForm.role">
-          <el-option label="系统管理员" value="admin" />
-          <el-option label="管理员" value="manager" />
+          <el-option label="系统管理员" value="system_admin" />
+          <el-option label="管理员" value="admin" />
           <el-option label="普通用户" value="user" />
         </el-select>
       </el-form-item>
