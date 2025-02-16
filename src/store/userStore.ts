@@ -13,6 +13,7 @@ export const userStore = defineStore('user', () => {
 
   // 计算属性，用于快速判断用户是否登录
   const isLoggedIn = computed(() => !!accessToken.value);
+  const isAdmin = computed(() => ['system_admin', 'admin'].includes(role.value));
 
   // 设置访问和刷新令牌的方法
   function setTokens(tokens: { access_token: string; refresh_token: string }) {
@@ -62,5 +63,5 @@ export const userStore = defineStore('user', () => {
     }
   }
 
-  return { accessToken, refreshTokenToken: refreshToken, role, username, userId: id, isLoggedIn, login, logout, refreshTokenMethod };
+  return { accessToken, refreshTokenToken: refreshToken, role, username, userId: id, isLoggedIn, isAdmin, login, logout, refreshTokenMethod };
 });
