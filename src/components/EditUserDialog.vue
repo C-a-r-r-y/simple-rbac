@@ -39,6 +39,7 @@ const props = defineProps<{
 }>()
 
 const dialogVisible = ref(false)
+const options = ref<{ userId?: number, mode?: 'create' | 'edit', onConfirm?: () => void }>({})
 const editForm = ref<UserResponse & { password?: string }>({
   id: 0,
   username: '',
@@ -51,9 +52,10 @@ const editForm = ref<UserResponse & { password?: string }>({
 
 const emit = defineEmits(['confirm'])
 
-const open = async () => {
-  if (props.mode === 'edit' && props.userId) {
-    const user = await userService.getUser(props.userId)
+const open = async (opts: { userId?: number, mode?: 'create' | 'edit', onConfirm?: () => void }) => {
+  options.value = opts
+  if (options.value.mode === 'edit' && options.value.userId) {
+    const user = await userService.getUser(options.value.userId)
     editForm.value = { ...user }
   } else {
     editForm.value = {
@@ -64,6 +66,9 @@ const open = async () => {
     created_at: '',
     updated_at: ''
     }
+  }
+  if (options.value.onConfirm) {
+    emit('confirm', options.value.onConfirm)
   }
   dialogVisible.value = true
 }
@@ -88,6 +93,9 @@ const handleConfirm = async () => {
       await userService.updateUser(id, updateData)
     }
     emit('confirm', editForm.value)
+    if (options.value.onConfirm) {
+      options.value.onConfirm()
+    }
     dialogVisible.value = false
   } catch (error) {
     console.error('操作失败:', error)

@@ -1,4 +1,7 @@
 <template>
+  <div>
+    用户列表
+  </div>
   <el-table :data="users" style="width: 100%">
     <el-table-column prop="id" label="ID" width="100" />
     <el-table-column prop="username" label="用户名" />
@@ -37,7 +40,9 @@ const isAdmin = store.isAdmin;
 
 const fetchUsers = async () => {
   try {
-    users.value = await userService.getUsers();
+    const data = await userService.getUsers();
+    console.log('获取用户列表成功:', data);
+    users.value = data;
   } catch (error) {
     console.error('获取用户列表失败:', error);
   }
@@ -46,9 +51,10 @@ const fetchUsers = async () => {
 const editDialogRef = ref<InstanceType<typeof EditUserDialog>>();
 
 const handleEdit = (user: UserResponse) => {
-  editDialogRef.value?.open();
-  editDialogRef.value?.$emit('confirm', () => {
-    fetchUsers();
+  editDialogRef.value?.open({
+    userId: user.id,
+    mode: 'edit',
+    onConfirm: () => fetchUsers()
   });
 };
 
