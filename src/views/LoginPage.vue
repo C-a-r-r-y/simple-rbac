@@ -17,6 +17,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import type { Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { userStore } from '@/store/userStore'
 import { ElMessage } from 'element-plus'
@@ -37,10 +38,13 @@ const form = ref<LoginForm>({
 const handleLogin = async () => {
   try {
     const { username, password } = form.value
+    if (!username || !password) {
+      throw new Error('用户名和密码不能为空')
+    }
     await store.login(username, password)
     router.push({ name: 'manage' })
-  } catch (error) {
-    ElMessage.error('登录失败，请检查用户名和密码')
+  } catch (error: any) {
+    ElMessage.error(error.message || '登录失败，请检查用户名和密码')
   }
 }
 </script>

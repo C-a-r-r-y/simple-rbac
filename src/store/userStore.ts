@@ -9,7 +9,7 @@ export const userStore = defineStore('user', () => {
   const refreshToken = ref('');
   const role = ref('');
   const username = ref('');
-  const userId = ref<number | null>(null);
+  const id = ref<number | null>(null);
 
   // 计算属性，用于快速判断用户是否登录
   const isLoggedIn = computed(() => !!accessToken.value);
@@ -29,13 +29,14 @@ export const userStore = defineStore('user', () => {
   async function login(usernameParam: string, password: string) {
     try {
       const { access_token, refresh_token } = await authService.login(usernameParam, password);
-      const decoded = jwtDecode<{ sub: string; role: string; username: string }>(access_token);
+      const decoded = jwtDecode<{ sub: string; role: string; username: string; id: string }>(access_token);
       setTokens({ access_token, refresh_token });
       setRole(decoded.role);
       username.value = decoded.username;
-      userId.value = parseInt(decoded.sub);
+      id.value = parseInt(decoded.id);
     } catch (error) {
       console.error('Login failed:', error);
+      throw error;
     }
   }
 
@@ -45,7 +46,7 @@ export const userStore = defineStore('user', () => {
     refreshToken.value = '';
     role.value = '';
     username.value = '';
-    userId.value = null;
+    id.value = null;
   }
 
   // 刷新访问令牌的方法，调用 authService.refreshToken 获取新令牌并设置状态
@@ -58,5 +59,5 @@ export const userStore = defineStore('user', () => {
     }
   }
 
-  return { accessToken, refreshTokenToken: refreshToken, role, username, userId, isLoggedIn, login, logout, refreshTokenMethod };
+  return { accessToken, refreshTokenToken: refreshToken, role, username, userId: id, isLoggedIn, login, logout, refreshTokenMethod };
 });
