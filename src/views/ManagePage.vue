@@ -40,12 +40,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
 import { userStore as store } from '@/store/userStore'
-import { userService } from '@/api/userService'
-import type { UserResponse } from '@/api/types'
 import UserTable from '@/components/UserTable.vue'
 import EditUserDialog from '@/components/EditUserDialog.vue'
 

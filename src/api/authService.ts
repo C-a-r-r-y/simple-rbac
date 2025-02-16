@@ -1,5 +1,5 @@
 import apiClient from './axiosInstance';
-import type { TokenResponse, HTTPValidationError } from './types';
+import type { TokenResponse } from './types';
 
 const API_BASE_URL = '/auth';
 

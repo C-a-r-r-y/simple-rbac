@@ -24,7 +24,7 @@ const router = createRouter({
 })
 
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   //const userStore = useUserStore()
   
   // 如果路由需要认证但用户未登录

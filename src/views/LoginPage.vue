@@ -17,7 +17,6 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import type { Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { userStore } from '@/store/userStore'
 import { ElMessage } from 'element-plus'

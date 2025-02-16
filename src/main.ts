@@ -21,12 +21,12 @@ app.use(ElementPlus)
 const store = userStore()
 
 // 使用插件进行持久化，监听 store 变化并保存到本地存储
-store.$subscribe((mutation, state) => {
+store.$subscribe((_, state) => {
   localStorage.setItem('authStore', JSON.stringify(state));
 });
 
 // 监听 action 执行，登录和刷新令牌后保存状态到本地存储
-store.$onAction(({ name, store, args, after, onError }) => {
+store.$onAction(({ name, store, after }) => {
   if (name === 'login' || name === 'refreshTokenMethod') {
     after(() => {
       localStorage.setItem('authStore', JSON.stringify(store.$state));

@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { UserResponse, UserCreate } from '@/api/types'
 import { userService } from '@/api/userService'
