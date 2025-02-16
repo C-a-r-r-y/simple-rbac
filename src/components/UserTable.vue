@@ -4,14 +4,14 @@
     <el-table-column prop="username" label="用户名" />
     <el-table-column prop="role" label="角色" />
     <el-table-column prop="description" label="描述" />
-    <el-table-column prop="createdAt" label="创建时间" width="180">
+    <el-table-column prop="created_at" label="创建时间" width="180">
       <template #default="scope">
-        {{ new Date(scope.row.createdAt).toLocaleString() }}
+        {{ new Date(scope.row.created_at).toLocaleString() }}
       </template>
     </el-table-column>
-    <el-table-column prop="updatedAt" label="更新时间" width="180">
+    <el-table-column prop="updated_at" label="更新时间" width="180">
       <template #default="scope">
-        {{ new Date(scope.row.updatedAt).toLocaleString() }}
+        {{ new Date(scope.row.updated_at).toLocaleString() }}
       </template>
     </el-table-column>
     <el-table-column label="操作" width="150" v-if="isAdmin">
