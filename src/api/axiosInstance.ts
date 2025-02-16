@@ -14,10 +14,13 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   async (config) => {
     const store = userStore();
-    const accessToken = store.accessToken;
     
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    // 只有已登录状态才添加Authorization头
+    if (store.isLoggedIn) {
+      const accessToken = store.accessToken;
+      if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
+      }
     }
     
     return config;
@@ -31,26 +34,35 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
+    const store = userStore(); // 获取用户状态
+
+    // 如果未登录，直接返回错误
+    if (!store.isLoggedIn) {
+      return Promise.reject(error);
+    }
+
     const originalRequest = error.config;
-    
+
     // 如果401错误且不是刷新token的请求
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      
+
       try {
-        const store = userStore();
+        // 尝试刷新 token
         await store.refreshTokenMethod();
-        
-        // 重试原始请求
+
+        // 更新请求头并重试原始请求
         originalRequest.headers.Authorization = `Bearer ${store.accessToken}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
-        // 刷新token失败，使用router跳转到登录页
+        // 刷新 token 失败，清除登录状态并跳转登录页
+        store.logout();
         router.push({ name: 'login' });
         return Promise.reject(refreshError);
       }
     }
-    
+
+    // 非 401 错误或已重试过，直接返回错误
     return Promise.reject(error);
   }
 );
