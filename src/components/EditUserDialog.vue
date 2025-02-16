@@ -30,6 +30,7 @@
 
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
+import { ElMessage } from 'element-plus'
 import type { UserResponse, UserCreate } from '@/api/types'
 import { userService } from '@/api/userService'
 
@@ -96,10 +97,17 @@ const handleConfirm = async () => {
     if (options.value.onConfirm) {
       options.value.onConfirm()
     }
+    ElMessage({
+      type: 'success',
+      message: props.mode === 'create' ? '用户创建成功' : '用户信息更新成功'
+    })
     dialogVisible.value = false
   } catch (error) {
     console.error('操作失败:', error)
-    // 这里可以添加错误提示
+    ElMessage({
+      type: 'error',
+      message: props.mode === 'create' ? '用户创建失败' : '用户信息更新失败'
+    })
   }
 }
 
