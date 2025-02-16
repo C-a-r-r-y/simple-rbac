@@ -33,6 +33,7 @@
         创建用户
       </el-button>
       <UserTable/>
+      <EditUserDialog ref="editUserDialog" mode="create" />
     </el-card>
   </div>
 </template>
@@ -45,11 +46,13 @@ import { userStore as store } from '@/store/userStore'
 import { userService } from '@/api/userService'
 import type { UserResponse } from '@/api/types'
 import UserTable from '@/components/UserTable.vue'
+import EditUserDialog from '@/components/EditUserDialog.vue'
 
 const router = useRouter()
 const userStore = store()
 
 const userList = ref<UserResponse[]>([])
+const editUserDialog = ref<InstanceType<typeof EditUserDialog>>()
 
 const fetchUserList = async () => {
   try {
@@ -66,7 +69,12 @@ const handleLogout = () => {
 }
 
 const handleCreateUser = () => {
-  // TODO: 实现创建用户逻辑
+  editUserDialog.value?.open({
+    mode: 'create',
+    onConfirm: () => {
+      fetchUserList()
+    }
+  })
 }
 
 onMounted(() => {
