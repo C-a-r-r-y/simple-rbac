@@ -44,7 +44,7 @@ const handleLogin = async () => {
     await store.login(username, password)
     router.push({ name: 'manage' })
   } catch (error: any) {
-    ElMessage.error(error.message || '登录失败，请检查用户名和密码')
+    ElMessage.error(error.message || '登录失败')
   }
 }
 </script>

@@ -36,7 +36,10 @@ export const userStore = defineStore('user', () => {
       id.value = parseInt(decoded.id);
     } catch (error) {
       console.error('Login failed:', error);
-      throw error;
+      const err = new Error('登录失败');
+      err.name = 'LoginError';
+      err.cause = error;
+      throw err;
     }
   }
 
