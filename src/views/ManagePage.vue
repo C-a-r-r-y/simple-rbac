@@ -29,6 +29,7 @@
         type="primary"
         class="create-btn"
         @click="handleCreateUser"
+        v-if="userStore.isAdmin"
       >
         创建用户
       </el-button>
@@ -64,6 +65,7 @@ const handleCreateUser = () => {
     mode: 'create',
     onConfirm: () => {
       userTableRef.value?.fetchUsers()
+      console.log('用户创建成功，刷新用户列表')
     }
   })
 }
