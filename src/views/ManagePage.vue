@@ -1,14 +1,24 @@
 <template>
   <div class="manage-page">
-    <el-button 
-      type="danger" 
-      class="logout-btn"
-      @click="handleLogout"
-    >
-      登出
-    </el-button>
-
-    <UserTable/>
+    <el-card class="page-container">
+      <div class="page-header">
+        <div class="user-info">
+          <h2 class="page-title">用户管理</h2>
+          <div class="user-detail">
+            <span class="username">{{ userStore.username }}</span>
+            <span class="role">({{ userStore.role }})</span>
+          </div>
+        </div>
+        <el-button
+          type="danger"
+          class="logout-btn"
+          @click="handleLogout"
+        >
+          登出
+        </el-button>
+      </div>
+      <UserTable/>
+    </el-card>
   </div>
 </template>
 
@@ -48,6 +58,26 @@ onMounted(() => {
 <style scoped>
 .manage-page {
   padding: 20px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-detail {
+  margin-top: 4px;
+  color: #606266;
+  font-size: 14px;
+}
+
+.username {
+  font-weight: 500;
+}
+
+.role {
+  margin-left: 8px;
+  color: #909399;
 }
 
 .logout-btn {

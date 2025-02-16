@@ -1,7 +1,4 @@
 <template>
-  <div>
-    用户列表
-  </div>
   <el-table :data="users" style="width: 100%">
     <el-table-column prop="id" label="ID" width="100" />
     <el-table-column prop="username" label="用户名" />
