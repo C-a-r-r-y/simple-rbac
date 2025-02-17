@@ -12,6 +12,27 @@
 * Axios：用于与后端 API 进行通信。
 * Vite：构建工具，用于快速开发和打包项目。
 * npm：包管理工具
+* pinia-plugin-persistedstate：用于状态持久化存储
+* jwt-decode：用于解析JWT令牌
+
+## 项目结构
+
+```
+frontend/
+├── src/
+│   ├── api/            # API 服务相关
+│   ├── components/     # 公共组件
+│   ├── router/         # 路由配置
+│   ├── store/          # 状态管理
+│   ├── views/          # 页面视图
+│   ├── App.vue         # 根组件
+│   ├── main.ts         # 入口文件
+│   └── style.css       # 全局样式
+├── index.html          # 主页面
+├── package.json        # 项目依赖
+├── vite.config.ts      # Vite 配置
+└── tsconfig.json       # TypeScript 配置
+```
 
 ## 页面设计
 
@@ -33,8 +54,10 @@
 
 #### UI 组件安排
 
+* 导航栏：使用 Element Plus 的 `el-menu` 组件，显示欢迎信息和当前用户信息
 * 登出按钮：使用 Element Plus 的 `el-button` 组件，位于页面右上角，点击后触发登出逻辑。
 * 用户列表：使用 Element Plus 的 `el-table` 组件，展示用户信息，包括 `ID`、`用户名`、`角色`、`描述` 等字段。
+* 创建用户按钮：使用 Element Plus 的 `el-button` 组件，仅管理员可见，点击后弹出创建用户对话框。
 * 修改按钮：使用 Element Plus 的 `el-button` 组件，位于每一行的操作列中，点击后弹出修改对话框。
 * 删除按钮：使用 Element Plus 的 `el-button` 组件，位于每一行的操作列中，点击后触发删除逻辑。
 * 修改对话框：使用 Element Plus 的 `el-dialog` 组件，用于修改用户信息。
@@ -42,6 +65,7 @@
 #### 功能描述
 
 * 用户列表展示：前端通过 Axios 发送请求到 `/api/users` 接口，获取用户列表数据，并在表格中展示。
+* 创建用户：管理员点击创建用户按钮后，弹出创建用户对话框，填写信息后提交。
 * 修改按钮的显示与隐藏：根据当前登录用户的角色，动态控制修改按钮的显示与隐藏。只有 `系统管理员` 和 `管理员` 可以看到并操作修改按钮。
 * 删除按钮的显示与隐藏：根据当前登录用户的角色，动态控制删除按钮的显示与隐藏。只有 `系统管理员` 和 `管理员` 可以看到并操作删除按钮。
 * 修改用户信息：点击修改按钮后，弹出修改对话框，用户可以在对话框中修改用户名、角色和描述信息。修改完成后，前端通过 Axios 发送请求到 `/api/users/{user_id}` 接口，更新用户信息。
@@ -74,6 +98,7 @@
 
 * 登录成功后，前端将 `access_token` 和 `refresh_token` 存储在 Pinia 状态管理中，并设置 `access_token` 的过期时间。
 * 每次发送 API 请求时，前端从 Pinia 中获取 `access_token` 并添加到请求头中。
+* 使用 pinia-plugin-persistedstate 插件将 token 存储在 localStorage 中，实现状态持久化
 
 ### 2. Token 自动刷新
 
@@ -84,6 +109,23 @@
 
 ### 用户登录状态
 
-* 使用 Pinia 存储用户登录状态，包括 `access_token`、`refresh_token`、用户角色等信息。
+* 使用 Pinia 存储用户登录状态，包括 `access_token`、`refresh_token`、用户角色、用户名、用户ID等信息。
 * 在用户登出时，清除 Pinia 中的登录状态。
-* 将token储存在localStorage中，使用pinia-plugin-persistedstate插件进行持久化，并在启动时读取localstorage恢复状态
+* 使用 pinia-plugin-persistedstate 插件进行状态持久化，在应用启动时自动从 localStorage 恢复状态
+
+## 开发环境配置
+
+1. 安装依赖：
+   ```bash
+   npm install
+   ```
+
+2. 启动开发服务器：
+   ```bash
+   npm run dev
+   ```
+
+3. 构建生产环境：
+   ```bash
+   npm run build
+   ```
