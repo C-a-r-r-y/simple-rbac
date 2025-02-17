@@ -16,10 +16,10 @@
 | `id`       | `INT`         | `PRIMARY KEY`, `AUTO_INCREMENT`       | -      | 用户ID，主键，自增                                 |
 | `username`       | `VARCHAR(50)`         | `NOT NULL`, `UNIQUE`       | -      | 用户名，唯一                                       |
 | `password`       | `VARCHAR(255)`         | `NOT NULL`         | -      | 用户密码，使用哈希加密存储                         |
-| `role`       | `ENUM`         | `NOT NULL`         | `'user'`       | 用户角色，枚举类型，可选值为 `system_admin`, `admin`, `user`                  |
+| `role`       | `ENUM`         | `NOT NULL`         | `UserRole.USER`       | 用户角色，枚举类型，可选值为 `UserRole.SYSTEM_ADMIN`, `UserRole.ADMIN`, `UserRole.USER`                  |
 | `description`       | `TEXT`         | -        | -      | 用户描述，可选                                     |
-| `created_at`       | `DATETIME`         | -        | `CURRENT_TIMESTAMP`       | 用户创建时间，默认值为当前时间                     |
-| `updated_at`       | `DATETIME`         | -        | `CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`       | 用户信息更新时间，默认值为当前时间，更新时自动更新 |
+| `created_at`       | `DATETIME`         | -        | `当前UTC时间`       | 用户创建时间，默认值为当前UTC时间                     |
+| `updated_at`       | `DATETIME`         | -        | `当前UTC时间，更新时自动更新`       | 用户信息更新时间，默认值为当前UTC时间，更新时自动更新 |
 
 ### 数据库初始化
 
@@ -37,8 +37,19 @@
 
 JWT（JSON Web Token）用于用户身份验证和权限控制。JWT 包含以下信息：
 
-* **Payload**：用户 ID、用户名、角色、Token 过期时间等。
+* **Payload**：用户 ID、用户名、角色、Token 过期时间、token_type等。
 * **签名**：使用后端密钥对 Payload 进行签名，确保 Token 的完整性和安全性。
+
+### JWT Token 数据结构
+
+```python
+class TokenPayload:
+    id: int  # 用户ID
+    username: str  # 用户名
+    role: str  # 用户角色
+    exp: int  # Token过期时间
+    token_type: str  # Token类型（access或refresh）
+```
 
 ### JWT 自动过期机制
 
@@ -52,198 +63,10 @@ JWT（JSON Web Token）用于用户身份验证和权限控制。JWT 包含以�
 3. 服务端生成新的 Access Token 和 Refresh Token，并返回给客户端。
 4. 客户端更新本地存储的 Token。
 
-## API 设计
+### Token 验证
 
-### 用户登录
-
-* **URL**: `/api/auth/login`
-* **HTTP 方法**: POST
-* **请求体**:
-
-  ```json
-  {
-    "username": "admin",
-    "password": "password123"
-  }
-  ```
-* **响应**:
-
-  * 成功：
-
-    ```json
-    {
-      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-      "token_type": "bearer",
-      "expires_in": 1800
-    }
-    ```
-  * 失败：
-
-    ```json
-    {
-      "detail": "Invalid username or password"
-    }
-    ```
-
-### 用户登出
-
-* **URL**: `/api/auth/logout`
-* **HTTP 方法**: POST
-* **请求头**:
-
-  * `Authorization: Bearer <access_token>`
-* **响应**:
-
-  * 成功：
-
-    ```json
-    {
-      "message": "Successfully logged out"
-    }
-    ```
-
-### 刷新 JWT Token
-
-* **URL**: `/api/auth/refresh`
-* **HTTP 方法**: POST
-* **请求体**:
-
-  ```json
-  {
-    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-  }
-  ```
-* **响应**:
-
-  * 成功：
-
-    ```json
-    {
-      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-      "token_type": "bearer",
-      "expires_in": 1800
-    }
-    ```
-  * 失败：
-
-    ```json
-    {
-      "detail": "Invalid refresh token"
-    }
-    ```
-
-### 获取用户列表
-
-* **URL**: `/api/users`
-* **HTTP 方法**: GET
-* **请求头**:
-
-  * `Authorization: Bearer <access_token>`
-* **查询参数**:
-
-  * `page`：页码（默认 1）
-  * `limit`：每页条数（默认 10）
-  * `role`：按角色过滤（可选）
-* **响应**:
-
-  ```json
-  {
-    "total": 100,
-    "users": [
-      {
-        "id": 1,
-        "username": "admin",
-        "role": "system_admin",
-        "description": "Default system admin",
-        "created_at": "2023-10-01T12:00:00Z",
-        "updated_at": "2023-10-01T12:00:00Z"
-      },
-      ...
-    ]
-  }
-  ```
-
-### 创建用户
-
-* **URL**: `/api/users`
-* **HTTP 方法**: POST
-* **请求头**:
-
-  * `Authorization: Bearer <access_token>`
-* **请求体**:
-
-  ```json
-  {
-    "username": "new_user",
-    "password": "new_password123",
-    "role": "user",
-    "description": "New user description"
-  }
-  ```
-* **响应**:
-
-  * 成功：
-
-    ```json
-    {
-      "id": 2,
-      "username": "new_user",
-      "role": "user",
-      "description": "New user description",
-      "created_at": "2023-10-01T12:00:00Z",
-      "updated_at": "2023-10-01T12:00:00Z"
-    }
-    ```
-
-### 更新用户信息
-
-* **URL**: `/api/users/{user_id}`
-* **HTTP 方法**: PUT
-* **请求头**:
-
-  * `Authorization: Bearer <access_token>`
-* **请求体**:
-
-  ```json
-  {
-    "username": "updated_user",
-    "role": "admin",
-    "description": "Updated user description"
-  }
-  ```
-* **响应**:
-
-  * 成功：
-
-    ```json
-    {
-      "id": 1,
-      "username": "updated_user",
-      "role": "admin",
-      "description": "Updated user description",
-      "created_at": "2023-10-01T12:00:00Z",
-      "updated_at": "2023-10-01T12:30:00Z"
-    }
-    ```
-
-### 删除用户
-
-* **URL**: `/api/users/{user_id}`
-* **HTTP 方法**: DELETE
-* **请求头**:
-
-  * `Authorization: Bearer <access_token>`
-* **响应**:
-
-  * 成功：
-
-    ```json
-    {
-      "message": "User deleted successfully"
-    }
-    ```
+* **verify_access_token**：验证access token有效性并返回payload，如果token无效或类型不匹配则返回None
+* **verify_refresh_token**：验证refresh token有效性并返回payload，如果token无效或类型不匹配则返回None
 
 ## 单元测试
 
@@ -255,31 +78,24 @@ JWT（JSON Web Token）用于用户身份验证和权限控制。JWT 包含以�
 ### 测试用例
 
 1. **用户登录**：
-
     * 测试正确的用户名和密码。
     * 测试错误的用户名和密码。
 2. **用户登出**：
-
     * 测试已登录用户登出。
     * 测试未登录用户登出。
 3. **刷新 JWT Token**：
-
     * 测试有效的 Refresh Token。
     * 测试无效的 Refresh Token。
 4. **获取用户列表**：
-
     * 测试不同角色的用户访问权限。
     * 测试分页和过滤功能。
 5. **创建用户**：
-
     * 测试管理员创建用户。
     * 测试普通用户尝试创建用户。
 6. **更新用户信息**：
-
     * 测试管理员更新用户信息。
     * 测试普通用户尝试更新用户信息。
 7. **删除用户**：
-
     * 测试管理员删除用户。
     * 测试普通用户尝试删除用户。
 
