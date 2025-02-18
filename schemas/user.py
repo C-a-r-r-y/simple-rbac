@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from pydantic import BaseModel, Field, root_validator
+from pydantic import BaseModel, Field, model_validator
 from typing import Optional
 
 # 用户角色枚举
@@ -27,7 +27,7 @@ class UserUpdate(BaseModel):
     description: Optional[str] = Field(None, max_length=255, description="用户描述")
 
     # 可选：确保至少更新一个字段
-    @root_validator
+    @model_validator(mode='before')
     def validate_at_least_one_field(cls, values):
         if not any(values.values()):
             raise ValueError("至少需要更新一个字段")
