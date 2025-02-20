@@ -82,6 +82,9 @@ const handleConfirm = async () => {
       if (!createData.password) {
         throw new Error('密码不能为空')
       }
+      if (!/^\d{6,}$/.test(createData.password)) {
+        throw new Error('密码必须为6位或以上的数字')
+      }
       await userService.createUser({
         username: createData.username,
         password: createData.password,
